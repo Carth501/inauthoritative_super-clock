@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
-const offset = 1000000000000;
+const offset = BigInt("435075695441838343102");
 
 function getRandomDigits(count: number): string {
   if (count > 10) {
@@ -19,9 +19,9 @@ function App() {
   const [splitIndex, setSplitIndex] = useState(1);
   const clockTimeRef = useRef<HTMLParagraphElement | null>(null);
 
-  const clockText = `435075697225${clock - offset}${random_digits}`;
-  const firstHalf = clockText.slice(0, splitIndex);
-  const secondHalf = clockText.slice(splitIndex);
+  const displayClockText = (BigInt(clock) + offset).toString() + random_digits;
+  const firstHalf = displayClockText.slice(0, splitIndex);
+  const secondHalf = displayClockText.slice(splitIndex);
 
   useEffect(() => {
     let frameId = 0;
@@ -31,6 +31,7 @@ function App() {
       setRandomDigits(() => getRandomDigits(41));
       frameId = requestAnimationFrame(tick);
     };
+    console.log(Date.now());
 
     frameId = requestAnimationFrame(tick);
 
@@ -58,7 +59,7 @@ function App() {
 
       const digitWidth = context.measureText("0").width;
       const nextSplitIndex = Math.min(
-        clockText.length - 1,
+        displayClockText.length - 1,
         Math.max(1, Math.floor(width / digitWidth)),
       );
 
@@ -78,7 +79,7 @@ function App() {
     resizeObserver.observe(clockElement);
 
     return () => resizeObserver.disconnect();
-  }, [clockText.length]);
+  }, [displayClockText.length]);
 
   return (
     <main className="clock-shell">
